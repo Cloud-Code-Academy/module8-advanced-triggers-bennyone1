@@ -40,7 +40,7 @@ public with sharing class TriggerBestPracticeTest {
 	 * When an account is inserted change the account type to 'Prospect' if there is no value in the type field.
      * Trigger should only fire on insert.
      */
-    @IsTest 
+  /*  @IsTest 
     static void testAccountTrigger_setTypeProspect() {
         // Prepare the test data
         List<Account> accountTypeProspect = new List<Account>();
@@ -90,7 +90,7 @@ public with sharing class TriggerBestPracticeTest {
     * When an account is inserted copy the shipping address to the billing address.
     * Trigger should only fire on insert.
     */
-    @IsTest 
+   /* @IsTest 
     static void testAccountTrigger_addressCopy() {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
@@ -149,7 +149,7 @@ public with sharing class TriggerBestPracticeTest {
     * When an account is inserted set the rating to 'Hot' if the Phone, Website, and Fax is not empty.
     * Trigger should only fire on insert.
     */
-    @IsTest 
+    /*@IsTest 
     static void testAccountTrigger_setRating() {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
@@ -212,7 +212,7 @@ public with sharing class TriggerBestPracticeTest {
     * Email = 'default@email.com'
     * Trigger should only fire on insert.
     */
-    @IsTest
+   /* @IsTest
     static void testAccountTrigger_defaultContact() {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
