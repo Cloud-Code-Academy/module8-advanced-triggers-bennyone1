@@ -1,5 +1,5 @@
 public with sharing class AnotherOpportunityHelper extends TriggerHandler {
-    public AnotherOpportunityHelper() {
+    /*public AnotherOpportunityHelper() {
 
     }
     public static void setType(List<Opportunity> opportunities) {
@@ -15,6 +15,7 @@ public with sharing class AnotherOpportunityHelper extends TriggerHandler {
                     opp.addError('Cannot delete closed opportunity');
                     }
                 }
+        }*/
             }
-        }
+
     

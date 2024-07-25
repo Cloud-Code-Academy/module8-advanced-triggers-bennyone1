@@ -98,18 +98,49 @@ RESOURCES:
 https://www.salesforceben.com/12-salesforce-apex-best-practices/
 https://developer.salesforce.com/blogs/developer-relations/2015/01/apex-best-practices-15-apex-commandments
 */
-trigger OpportunityTrigger on Opportunity (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
-    if (Trigger.isBefore){
-        if (Trigger.isInsert){
-            OpportunityHandler handler = new OpportunityHandler();
-            handler.run();
-        }
+trigger OpportunityTrigger on Opportunity (
+    before insert, 
+    after insert, 
+    before update, 
+    after update, 
+    before delete, 
+    after delete, 
+    after undelete
+) {
+    OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
+    
+    // Handle before insert
+    if (Trigger.isBefore && Trigger.isInsert) {
+        handler.run();
+    }
+    
+    // Handle after insert
+    else if (Trigger.isAfter && Trigger.isInsert) {
+        handler.run();
+    }
+    
+    // Handle before update
+    else if (Trigger.isBefore && Trigger.isUpdate) {
+        handler.run();
+    }
+    
+    // Handle after update
+    else if (Trigger.isAfter && Trigger.isUpdate) {
+        handler.run();
     }
 
+    // Handle before delete
+    else if (Trigger.isBefore && Trigger.isDelete) {
+        handler.run();
+    }
+}
 
 
 
-    if (Trigger.isAfter){
+
+
+
+    /*if (Trigger.isAfter){
         if (Trigger.isInsert){
             // Create a new Task for newly inserted Opportunities
             for (Opportunity opp : Trigger.new){
@@ -148,7 +179,7 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
     - Sends an email notification to the owner of the Opportunity when it gets deleted.
     - Uses Salesforce's Messaging.SingleEmailMessage to send the email.
     */
-    private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
+   /* private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
         List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
         for (Opportunity opp : opps){
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
@@ -171,7 +202,7 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
     - Assigns a primary contact with the title of 'VP Sales' to undeleted Opportunities.
     - Only updates the Opportunities that don't already have a primary contact.
     */
-    private static void assignPrimaryContact(Map<Id,Opportunity> oppNewMap) {        
+    /*private static void assignPrimaryContact(Map<Id,Opportunity> oppNewMap) {        
         Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>();
         for (Opportunity opp : oppNewMap.values()){            
             Contact primaryContact = [SELECT Id, AccountId FROM Contact WHERE Title = 'VP Sales' AND AccountId = :opp.AccountId LIMIT 1];
@@ -182,5 +213,4 @@ trigger OpportunityTrigger on Opportunity (before insert, after insert, before u
             }
         }
         update oppMap.values();
-    }
-}
+    }*/
