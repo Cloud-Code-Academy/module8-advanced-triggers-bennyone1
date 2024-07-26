@@ -28,5 +28,29 @@ public with sharing class OpportunityTriggerHelper {
         }
         insert tasksToInsert;
     }
-}
+
+        public static void updateDescriptionFromStage(List<Opportunity> newOpps, Map<Id, Opportunity> oldOppMap) {
+            List<Opportunity> oppsToUpdate = new List<Opportunity>();
+            for (Opportunity opp : newOpps) {
+                Opportunity oldOpp = oldOppMap.get(opp.Id);
+                if (opp.StageName != null && oldOpp != null && opp.StageName != oldOpp.StageName) {
+                    Opportunity updatedOpp = new Opportunity(Id = opp.Id);
+                    if (oldOpp.Description == null) {
+                        updatedOpp.Description = ''; 
+                    } else {
+                        updatedOpp.Description = oldOpp.Description;
+                    }
+                    updatedOpp.Description += '\n Stage Change:' + opp.StageName + ':' + DateTime.now().format();
+                    oppsToUpdate.add(updatedOpp);
+                }
+            }
+            if (!oppsToUpdate.isEmpty()) {
+                update oppsToUpdate; 
+            }
+        }
+    }
+    
+    
+
+    
     

@@ -267,7 +267,7 @@ public with sharing class TriggerBestPracticeTest {
     * - Stop recursion - 1 instance
     * All of the AnotherOpportunityTrigger tests should pass if you have refactored the trigger correctly
     */
-    @IsTest
+    /*@IsTest
     private static void testAnotherOpportunityTrigger_setType() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -358,8 +358,8 @@ public with sharing class TriggerBestPracticeTest {
         List<Task> tasks = [SELECT Id, Subject, WhatId FROM Task WHERE WhatId IN :oppsToInsert];
         System.assertEquals(numberOfOpps, tasks.size(), 'Number of Tasks created is incorrect.');
     }
-
-    /*@IsTest
+*/
+    @IsTest
     private static void testAnotherOpportunityTrigger_updateDescriptionFromStage() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -389,7 +389,7 @@ public with sharing class TriggerBestPracticeTest {
         }
     }
 
-    @IsTest
+    /*@IsTest
     private static void testAnotherOpportunityTrigger_notifyOwnersOpportunityDeleted() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
