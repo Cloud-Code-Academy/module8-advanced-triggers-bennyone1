@@ -133,6 +133,10 @@ trigger OpportunityTrigger on Opportunity (
     else if (Trigger.isBefore && Trigger.isDelete) {
         handler.run();
     }
+     // Handle after delete
+     else if (Trigger.isAfter && Trigger.isDelete) {
+        handler.run();
+    }
 }
 
 

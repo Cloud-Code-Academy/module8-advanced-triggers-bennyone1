@@ -26,7 +26,7 @@ public with sharing class OpportunityTriggerHelper {
             tsk.ActivityDate = Date.today().addDays(3);
             tasksToInsert.add(tsk);
         }
-        insert tasksToInsert;
+        insert as user tasksToInsert;
     }
 
         public static void updateDescriptionFromStage(List<Opportunity> newOpps, Map<Id, Opportunity> oldOppMap) {
@@ -45,12 +45,38 @@ public with sharing class OpportunityTriggerHelper {
                 }
             }
             if (!oppsToUpdate.isEmpty()) {
-                update oppsToUpdate; 
+                update as user oppsToUpdate; 
+            }
+        }
+
+        public static void  notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
+            List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+            
+            Set<Id> ownerIds = new Set<Id>();
+            for (Opportunity opp : opps) {
+                ownerIds.add(opp.OwnerId);
+            }
+            System.debug('ownerIds set: ' + ownerIds);
+            Map<Id, String> mapOfOwnerEmails = new Map<Id, String>();
+            for (User user : [SELECT Id, Email FROM User WHERE Id IN :ownerIds]) {
+                mapOfOwnerEmails.put(user.Id, user.Email);
+            }   
+            System.debug('map of owner emails: ' + mapOfOwnerEmails);
+            for (Opportunity opp : opps){
+                String ownerEmail = mapOfOwnerEmails.get(opp.OwnerId);
+                if (ownerEmail != null) {
+                    Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                    mail.setToAddresses(new String[] { ownerEmail });
+                    mail.setSubject('Opportunity Deleted : ' + opp.Name);
+                    mail.setPlainTextBody('Your Opportunity: ' + opp.Name +' has been deleted.');
+                    mails.add(mail);
+                }
+            }        
+            
+            try {
+                Messaging.sendEmail(mails);
+            } catch (Exception e){
+                System.debug('Exception: ' + e.getMessage());
             }
         }
     }
-    
-    
-
-    
-    

@@ -68,7 +68,7 @@ trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, b
     - Sends an email notification to the owner of the Opportunity when it gets deleted.
     - Uses Salesforce's Messaging.SingleEmailMessage to send the email.
     */
-    /*private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
+    /*private static void  notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
         List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
         for (Opportunity opp : opps){
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();

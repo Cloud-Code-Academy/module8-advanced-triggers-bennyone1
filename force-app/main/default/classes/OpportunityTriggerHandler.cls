@@ -23,5 +23,10 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler{
         Map<Id, Opportunity> oldOppMap = (Map<Id, Opportunity>) Trigger.oldMap;
         OpportunityTriggerHelper.updateDescriptionFromStage(newOpps, oldOppMap);
     }
-    }
 
+    @TestVisible
+    protected override void afterDelete() {
+        List<Opportunity> oldOpps = (List<Opportunity>) Trigger.old;
+        OpportunityTriggerHelper.notifyOwnersOpportunityDeleted(oldOpps);
+    }
+}

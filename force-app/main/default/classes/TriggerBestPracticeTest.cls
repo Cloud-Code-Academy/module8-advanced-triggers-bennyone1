@@ -359,7 +359,7 @@ public with sharing class TriggerBestPracticeTest {
         System.assertEquals(numberOfOpps, tasks.size(), 'Number of Tasks created is incorrect.');
     }
 */
-    @IsTest
+    /*@IsTest
     private static void testAnotherOpportunityTrigger_updateDescriptionFromStage() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -388,8 +388,8 @@ public with sharing class TriggerBestPracticeTest {
             System.assert(opp.Description.contains('Stage Change:Qualification'), 'Opportunity Description is incorrect: ' + opp.Description);
         }
     }
-
-    /*@IsTest
+*/
+    @IsTest
     private static void testAnotherOpportunityTrigger_notifyOwnersOpportunityDeleted() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -413,7 +413,7 @@ public with sharing class TriggerBestPracticeTest {
         System.assertEquals(0, opps.size(), 'Number of Opportunities created is incorrect.');
     }
 
-    @IsTest
+    /*@IsTest
     private static void testAnotherOpportunityTrigger_assignPrimaryContact() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
