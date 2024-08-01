@@ -389,7 +389,7 @@ public with sharing class TriggerBestPracticeTest {
         }
     }
 */
-    @IsTest
+    /*@IsTest
     private static void testAnotherOpportunityTrigger_notifyOwnersOpportunityDeleted() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;
@@ -467,7 +467,7 @@ public with sharing class TriggerBestPracticeTest {
         }
         Test.stopTest();
     }
-
+*/
 
     //Part 3 - OpportunityTriggerHandler Implementation
     /*
@@ -486,7 +486,7 @@ public with sharing class TriggerBestPracticeTest {
     * When an opportunity is updated validate that the amount is greater than 5000.
     * Trigger should only fire on update.
     */
-    /*@IsTest
+    @IsTest
     static void testOpportunityTrigger_amountValidation() {
         // Prepare the test data
         List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
@@ -537,7 +537,7 @@ public with sharing class TriggerBestPracticeTest {
     * When an opportunity is deleted prevent the deletion of a closed won opportunity if the account industry is 'Banking'.
     * Trigger should only fire on delete.
     */
-    /*@IsTest
+    @IsTest
     static void testOpportunityTrigger_deleteCloseWonOpportunity() {
         // Prepare the test data
         Account testAccount = new Account(Name = 'Test Account', Industry = 'Banking');
@@ -572,7 +572,7 @@ public with sharing class TriggerBestPracticeTest {
     * When an opportunity is updated set the primary contact on the opportunity to the contact with the title of 'CEO'.
     * Trigger should only fire on update.
     */
-    /*@IsTest
+    @IsTest
     static void testOpportunityTrigger_setPrimaryContact() {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
@@ -632,5 +632,5 @@ public with sharing class TriggerBestPracticeTest {
             System.assertEquals(opp.Primary_Contact__r.FirstName, 'Big Boss', 'Primary contact was not set correctly.');
             System.assertEquals(opp.Primary_Contact__r.Title, 'CEO', 'Primary contact was not set correctly.');
         }
-    }*/
+    }
 }

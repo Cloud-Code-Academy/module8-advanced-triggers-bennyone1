@@ -1,4 +1,6 @@
 public with sharing class OpportunityTriggerHelper {
+    public static boolean isTriggerRunning = false;
+
     public static void setType(List<Opportunity> opportunities) {
     for (Opportunity opp : opportunities) {
         if (opp.Type == null){
@@ -15,7 +17,6 @@ public with sharing class OpportunityTriggerHelper {
             }
 
     public static void insertTask(List<Opportunity> newOpps) {
-        System.debug('new opps to create tasks: '+ newOpps);
         List<Task> tasksToInsert = new List<Task>();
         for (Opportunity opp : newOpps) {
             Task tsk = new Task();
@@ -56,12 +57,10 @@ public with sharing class OpportunityTriggerHelper {
             for (Opportunity opp : opps) {
                 ownerIds.add(opp.OwnerId);
             }
-            System.debug('ownerIds set: ' + ownerIds);
             Map<Id, String> mapOfOwnerEmails = new Map<Id, String>();
-            for (User user : [SELECT Id, Email FROM User WHERE Id IN :ownerIds]) {
+            for (User user : [SELECT Id, Email FROM User WHERE Id IN :ownerIds WITH SYSTEM_MODE]) {
                 mapOfOwnerEmails.put(user.Id, user.Email);
             }   
-            System.debug('map of owner emails: ' + mapOfOwnerEmails);
             for (Opportunity opp : opps){
                 String ownerEmail = mapOfOwnerEmails.get(opp.OwnerId);
                 if (ownerEmail != null) {
@@ -75,35 +74,28 @@ public with sharing class OpportunityTriggerHelper {
             
             try {
                 Messaging.sendEmail(mails);
-            } catch (Exception e){
-                System.debug('Exception: ' + e.getMessage());
-            }
+            } catch (Exception e){}
+            
         }
 
         public static void assignPrimaryContact(Map<Id, Opportunity> oppNewMap) {
-            System.debug('Starting assignPrimaryContact method');
         
             Set<Id> accountIds = new Set<Id>();
             for (Opportunity opp : oppNewMap.values()) {
                 accountIds.add(opp.AccountId);
             }
-            
-            System.debug('Account IDs collected: ' + accountIds);
-        
+                    
             Map<Id, Contact> accountPrimaryContactsMap = new Map<Id, Contact>();
             for (Contact con : [
                 SELECT Id, AccountId 
                 FROM Contact 
                 WHERE Title = 'VP Sales' 
-                AND AccountId IN :accountIds
+                AND AccountId IN :accountIds WITH SYSTEM_MODE
             ]) {
                 accountPrimaryContactsMap.put(con.AccountId, con);
             }
-            
-            System.debug('Primary Contacts Map: ' + accountPrimaryContactsMap);
-        
-            List<Opportunity> oppsToUpdate = new List<Opportunity>();
-            
+                    
+            List<Opportunity> oppsToUpdate = new List<Opportunity>(); 
             for (Opportunity opp : oppNewMap.values()) {
                 if (opp.Primary_Contact__c == null) {
                     Contact primaryContact = accountPrimaryContactsMap.get(opp.AccountId);
@@ -113,13 +105,70 @@ public with sharing class OpportunityTriggerHelper {
                     }
                 }
             }
-            
-            System.debug('Opportunities to update: ' + oppsToUpdate);
-        
+                    
             if (!oppsToUpdate.isEmpty()) {
-                update oppsToUpdate;
+                update as system oppsToUpdate;
             }
-        
-            System.debug('Finished assignPrimaryContact method');
         }
-    }
+
+        public static void amountValidation(List<Opportunity> newOpps) {
+            for (Opportunity opp : newOpps) {
+                if (opp.Amount < 5000){
+                    opp.addError('Opportunity amount must be greater than 5000');
+                }
+            }        
+        }
+
+        public static void deleteCloseWonOpportunity(List<Opportunity> oldOpps) {
+            Set<Id> opportunityIds = new Set<Id>();
+            for (Opportunity opp : oldOpps) {
+                opportunityIds.add(opp.Id);
+            }
+    
+            List<Opportunity> closedWonOpps = [
+                SELECT Id, StageName, AccountId, Account.Industry
+                FROM Opportunity
+                WHERE StageName = 'Closed Won'
+                AND Account.Industry = 'Banking'
+                AND Id IN :opportunityIds
+                WITH SECURITY_ENFORCED
+            ];
+    
+            for (Opportunity opp : closedWonOpps) {
+                opp.addError('Cannot delete closed opportunity for a banking account that is won');
+            }
+        }
+
+        public static void setPrimaryContact(List<Opportunity> newOpps) {
+            Set<Id> accountIds = new Set<Id>();
+            for (Opportunity opp : newOpps) {
+                accountIds.add(opp.AccountId);
+            }
+
+            Map<Id, Contact> accountIdToPrimaryContactMap = new Map<Id, Contact>();
+            for (Contact con : [
+                SELECT Id, AccountId, Title 
+                FROM Contact 
+                WHERE Title = 'CEO' 
+                AND AccountId IN :accountIds
+                WITH SECURITY_ENFORCED 
+            ]) {
+                accountIdToPrimaryContactMap.put(con.AccountId, con); 
+            }
+    
+            List<Opportunity> opportunitiesToUpdate = new List<Opportunity>();
+            for (Opportunity opp : newOpps) {
+                if (accountIdToPrimaryContactMap.containsKey(opp.AccountId)) {
+                    Opportunity updatedOpp = new Opportunity(
+                        Id = opp.Id, 
+                        Primary_Contact__c = accountIdToPrimaryContactMap.get(opp.AccountId).Id
+                    );
+                    opportunitiesToUpdate.add(updatedOpp); 
+                }
+            }
+    
+            if (!opportunitiesToUpdate.isEmpty()) {
+                update as system opportunitiesToUpdate;
+            }
+        }
+}

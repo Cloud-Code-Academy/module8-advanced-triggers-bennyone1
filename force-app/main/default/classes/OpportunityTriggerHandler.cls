@@ -1,29 +1,4 @@
 public with sharing class OpportunityTriggerHandler extends TriggerHandler {
-   /* private Map<Id, Opportunity> newMap;
-    private Map<Id, Opportunity> oldMap;
-
-    public OpportunityTriggerHandler(Map<Id, Opportunity> newMap, Map<Id, Opportunity> oldMap) {
-        this.newMap = newMap;
-        this.oldMap = oldMap;
-    }
-
-    public override void run() {
-        if (Trigger.isBefore && Trigger.isInsert) {
-            beforeInsert();
-        } else if (Trigger.isAfter && Trigger.isInsert) {
-            afterInsert();
-        } else if (Trigger.isBefore && Trigger.isUpdate) {
-            beforeUpdate();
-        } else if (Trigger.isAfter && Trigger.isUpdate) {
-            afterUpdate();
-        } else if (Trigger.isBefore && Trigger.isDelete) {
-            beforeDelete();
-        } else if (Trigger.isAfter && Trigger.isDelete) {
-            afterDelete();
-        } else if (Trigger.isAfter && Trigger.isUndelete) {
-            afterUndelete();
-        }
-    }*/
 
     @TestVisible
     protected virtual override void beforeInsert() {
@@ -34,6 +9,7 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
     protected override void beforeDelete() {
         List<Opportunity> oldOpps = (List<Opportunity>) Trigger.old;
         OpportunityTriggerHelper.validateCloseOpportunity(oldOpps);
+        OpportunityTriggerHelper.deleteCloseWonOpportunity(oldOpps);
 
     }
     @TestVisible
@@ -44,9 +20,18 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
 
     @TestVisible
     protected override void afterUpdate() {
-        List<Opportunity> newOpps = (List<Opportunity>) Trigger.new;
-        Map<Id, Opportunity> oldOppMap = (Map<Id, Opportunity>) Trigger.oldMap;
-        OpportunityTriggerHelper.updateDescriptionFromStage(newOpps, oldOppMap);
+        if (!OpportunityTriggerHelper.isTriggerRunning) {
+            OpportunityTriggerHelper.isTriggerRunning = true;
+            try {
+                List<Opportunity> newOpps = (List<Opportunity>) Trigger.new;
+                Map<Id, Opportunity> oldOppMap = (Map<Id, Opportunity>) Trigger.oldMap;
+                OpportunityTriggerHelper.updateDescriptionFromStage(newOpps, oldOppMap);
+                OpportunityTriggerHelper.amountValidation(newOpps);
+                OpportunityTriggerHelper.setPrimaryContact(newOpps);
+            } finally {
+                OpportunityTriggerHelper.isTriggerRunning = false;
+            }
+        }
     }
 
     @TestVisible
