@@ -413,7 +413,7 @@ public with sharing class TriggerBestPracticeTest {
         System.assertEquals(0, opps.size(), 'Number of Opportunities created is incorrect.');
     }
 
-    /*@IsTest
+    @IsTest
     private static void testAnotherOpportunityTrigger_assignPrimaryContact() {
         Account acc = new Account(Name = 'Test Account');
         insert acc;

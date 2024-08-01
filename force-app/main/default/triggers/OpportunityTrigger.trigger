@@ -137,7 +137,11 @@ trigger OpportunityTrigger on Opportunity (
      else if (Trigger.isAfter && Trigger.isDelete) {
         handler.run();
     }
-}
+    // Handle after Undelete
+    else if (Trigger.isAfter && Trigger.isUndelete) {
+       // OpportunityTriggerHandler handler = new OpportunityTriggerHandler(Trigger.newMap, Trigger.oldMap);
+        handler.run();
+    }
 
 
 
@@ -218,3 +222,4 @@ trigger OpportunityTrigger on Opportunity (
         }
         update oppMap.values();
     }*/
+}
