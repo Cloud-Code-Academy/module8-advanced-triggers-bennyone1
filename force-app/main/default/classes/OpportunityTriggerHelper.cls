@@ -74,8 +74,9 @@ public with sharing class OpportunityTriggerHelper {
             
             try {
                 Messaging.sendEmail(mails);
-            } catch (Exception e){}
-            
+            } catch (Exception e) {
+                System.debug('Error when sending email: ' + e.getMessage());
+            }
         }
 
         public static void assignPrimaryContact(Map<Id, Opportunity> oppNewMap) {
