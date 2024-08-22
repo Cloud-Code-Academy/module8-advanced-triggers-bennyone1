@@ -1,5 +1,8 @@
 public with sharing class OpportunityTriggerHelper {
     public static boolean isTriggerRunning = false;
+    public static String closedOppError = 'Cannot delete closed opportunity';
+    public static String oppUnder5KError = 'Opportunity amount must be greater than 5000';
+    public static String closedWonError = 'Cannot delete closed opportunity for a banking account that is won';
 
     public static void setType(List<Opportunity> opportunities) {
     for (Opportunity opp : opportunities) {
@@ -11,7 +14,7 @@ public with sharing class OpportunityTriggerHelper {
     public static void validateCloseOpportunity(List<Opportunity> opportunities) {
         for (Opportunity opp : opportunities) {
                 if (opp.IsClosed) {
-                    opp.addError('Cannot delete closed opportunity');
+                    opp.addError(closedOppError);
                     }
                 }
             }
@@ -19,15 +22,10 @@ public with sharing class OpportunityTriggerHelper {
     public static void insertTask(List<Opportunity> newOpps) {
         List<Task> tasksToInsert = new List<Task>();
         for (Opportunity opp : newOpps) {
-            Task tsk = new Task();
-            tsk.Subject = 'Call Primary Contact';
-            tsk.WhatId = opp.Id;
-            tsk.WhoId = opp.Primary_Contact__c;
-            tsk.OwnerId = opp.OwnerId;
-            tsk.ActivityDate = Date.today().addDays(3);
+            Task tsk = createNewTask(opp);
             tasksToInsert.add(tsk);
         }
-        insert as user tasksToInsert;
+        insert tasksToInsert;
     }
 
         public static void updateDescriptionFromStage(List<Opportunity> newOpps, Map<Id, Opportunity> oldOppMap) {
@@ -115,7 +113,7 @@ public with sharing class OpportunityTriggerHelper {
         public static void amountValidation(List<Opportunity> newOpps) {
             for (Opportunity opp : newOpps) {
                 if (opp.Amount < 5000){
-                    opp.addError('Opportunity amount must be greater than 5000');
+                    opp.addError(oppUnder5KError);
                 }
             }        
         }
@@ -136,7 +134,7 @@ public with sharing class OpportunityTriggerHelper {
             ];
     
             for (Opportunity opp : closedWonOpps) {
-                opp.addError('Cannot delete closed opportunity for a banking account that is won');
+                opp.addError(closedWonError);
             }
         }
 
@@ -171,5 +169,15 @@ public with sharing class OpportunityTriggerHelper {
             if (!opportunitiesToUpdate.isEmpty()) {
                 update as system opportunitiesToUpdate;
             }
+        }
+
+        private static Task createNewTask(Opportunity opp) {
+            Task task = new Task();
+            task.Subject = 'Call Primary Contact';
+            task.WhatId = opp.Id;
+            task.WhoId = opp.Primary_Contact__c;
+            task.OwnerId = opp.OwnerId;
+            task.ActivityDate = Date.today().addDays(3);
+            return task;
         }
 }

@@ -28,70 +28,59 @@ Always ensure that your helper methods are bulk-safe to handle multiple records 
 */
 public with sharing class AccountHelper {
     
-    public static void setTypeProspectAfterInsert(List<Account> newAccounts) {
+    public static void setTypeProspect(List<Account> newAccounts) {
         List<Account> accountsToUpdate = new List<Account>();
             for (Account acc : newAccounts) {
                 if (acc.Type == null) {
-                    Account accToUpdateAfterInsert = new Account(Id = acc.Id , Type = 'Prospect');
-                    accountsToUpdate.add(accToUpdateAfterInsert);
+                    acc.Type = 'Prospect';
                 }
-            }
-    
-            if (!accountsToUpdate.isEmpty()) {
-                update as system accountsToUpdate;
             }
         }
     
-    public static void addressCopyAfterInsert(List<Account> newAccounts) {
-        List<Account> accountsToUpdate = new List<Account>();
+    public static void addressCopy(List<Account> newAccounts) { // Tried to use acc.BillingAddress = acc.ShippingAddress (field not writeable)
+        List<Account> accountsToUpdate = new List<Account>();   //Also just used acc.ShippingAddress for the null check, but the values didn't copy over correctly per test
         for (Account acc : newAccounts) {
             if (acc.ShippingStreet != null ||
                 acc.ShippingCity != null ||
                 acc.ShippingState != null ||
                 acc.ShippingPostalCode != null ||
                 acc.ShippingCountry != null) {
-                    
-                Account accToUpdate = new Account(
-                    Id = acc.Id,
-                    BillingStreet = acc.ShippingStreet,
-                    BillingCity = acc.ShippingCity,
-                    BillingState = acc.ShippingState,
-                    BillingPostalCode = acc.ShippingPostalCode,
-                    BillingCountry = acc.ShippingCountry
-                );
-                accountsToUpdate.add(accToUpdate);
-            }            
+                
+                    acc.BillingStreet = acc.ShippingStreet;
+                    acc.BillingCity = acc.ShippingCity;
+                    acc.BillingState = acc.ShippingState;
+                    acc.BillingPostalCode = acc.ShippingPostalCode;
+                    acc.BillingCountry = acc.ShippingCountry;
+
+                }
+            }    
         }
-            update as system accountsToUpdate;
-    }
+        
     
         public static void setRating(List<Account> newAccounts) {
             List<Account> accountsToUpdate = new List<Account>();
             for (Account acc : newAccounts) {
-            if (acc.Phone != null && acc.Website != null && acc.Fax != null) {
-                Account accToUpdate = new Account(
-                    Id = acc.Id,
-                    Phone = acc.Phone,
-                    Website = acc.Website,
-                    Fax = acc.Fax,
-                    Rating = 'Hot'
-                );
-                accountsToUpdate.add(accToUpdate);
+                if (acc.Phone != null && acc.Website != null && acc.Fax != null) {
+                        acc.Rating = 'Hot';
+                }
             }
         }
-        update as system accountsToUpdate;
-    }
     
         public static void defaultContact(List<Account> newAccounts) {
             List<Contact> defaultContactsToCreate = new List<Contact>();
             for (Account acc : newAccounts) {
-                Contact con = new Contact(
-                    AccountId = acc.Id,
-                    LastName = 'DefaultContact',
-                    Email = 'default@email.com' 
-                );
+                Contact con = createDefaultContact(acc);
                 defaultContactsToCreate.add(con);
             }
-            insert as system defaultContactsToCreate;
+            insert defaultContactsToCreate;
         }
+
+        private static Contact createDefaultContact(Account acc) { 
+            Contact contact = new Contact(
+                AccountId = acc.Id,
+                LastName = 'DefaultContact',
+                Email = 'default@email.com'
+            );
+            return contact;
     }
+}

@@ -25,38 +25,5 @@ trigger OpportunityTrigger on Opportunity (
     after undelete
 ) {
     OpportunityTriggerHandler handler = new OpportunityTriggerHandler();
-    
-    // Handle before insert
-    if (Trigger.isBefore && Trigger.isInsert) {
         handler.run();
     }
-    
-    // Handle after insert
-    else if (Trigger.isAfter && Trigger.isInsert) {
-        handler.run();
-    }
-    
-    // Handle before update
-    else if (Trigger.isBefore && Trigger.isUpdate) {
-        handler.run();
-    }
-    
-    // Handle after update
-    else if (Trigger.isAfter && Trigger.isUpdate) {
-        handler.run();
-    }
-
-    // Handle before delete
-    else if (Trigger.isBefore && Trigger.isDelete) {
-        handler.run();
-    }
-     // Handle after delete
-    else if (Trigger.isAfter && Trigger.isDelete) {
-        handler.run();
-    }
-    // Handle after Undelete
-    else if (Trigger.isAfter && Trigger.isUndelete) {
-       // OpportunityTriggerHandler handler = new OpportunityTriggerHandler(Trigger.newMap, Trigger.oldMap);
-        handler.run();
-    }
-}
