@@ -37,8 +37,8 @@ public with sharing class AccountHelper {
             }
         }
     
-    public static void addressCopy(List<Account> newAccounts) { // Tried to use acc.BillingAddress = acc.ShippingAddress (field not writeable)
-        List<Account> accountsToUpdate = new List<Account>();   //Also just used acc.ShippingAddress for the null check, but the values didn't copy over correctly per test
+    public static void addressCopy(List<Account> newAccounts) { 
+        List<Account> accountsToUpdate = new List<Account>();   
         for (Account acc : newAccounts) {
             if (acc.ShippingStreet != null ||
                 acc.ShippingCity != null ||
