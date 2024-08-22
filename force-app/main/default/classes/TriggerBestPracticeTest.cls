@@ -212,7 +212,7 @@ public with sharing class TriggerBestPracticeTest {
     * Email = 'default@email.com'
     * Trigger should only fire on insert.
     */
-    @IsTest
+   @IsTest
     static void testAccountTrigger_defaultContact() {
         // Prepare the test data
         List<Account> accountsToInsert = new List<Account>();
@@ -267,6 +267,7 @@ public with sharing class TriggerBestPracticeTest {
     * - Stop recursion - 1 instance
     * All of the AnotherOpportunityTrigger tests should pass if you have refactored the trigger correctly
     */
+    
     @IsTest
     private static void testAnotherOpportunityTrigger_setType() {
         Account acc = new Account(Name = 'Test Account');

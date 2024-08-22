@@ -28,19 +28,59 @@ Always ensure that your helper methods are bulk-safe to handle multiple records 
 */
 public with sharing class AccountHelper {
     
-    public void setTypeProspect(SObject objects){
+    public static void setTypeProspect(List<Account> newAccounts) {
+        List<Account> accountsToUpdate = new List<Account>();
+            for (Account acc : newAccounts) {
+                if (acc.Type == null) {
+                    acc.Type = 'Prospect';
+                }
+            }
+        }
+    
+    public static void addressCopy(List<Account> newAccounts) { 
+        List<Account> accountsToUpdate = new List<Account>();   
+        for (Account acc : newAccounts) {
+            if (acc.ShippingStreet != null ||
+                acc.ShippingCity != null ||
+                acc.ShippingState != null ||
+                acc.ShippingPostalCode != null ||
+                acc.ShippingCountry != null) {
+                
+                    acc.BillingStreet = acc.ShippingStreet;
+                    acc.BillingCity = acc.ShippingCity;
+                    acc.BillingState = acc.ShippingState;
+                    acc.BillingPostalCode = acc.ShippingPostalCode;
+                    acc.BillingCountry = acc.ShippingCountry;
 
+                }
+            }    
+        }
+        
+    
+        public static void setRating(List<Account> newAccounts) {
+            List<Account> accountsToUpdate = new List<Account>();
+            for (Account acc : newAccounts) {
+                if (acc.Phone != null && acc.Website != null && acc.Fax != null) {
+                        acc.Rating = 'Hot';
+                }
+            }
+        }
+    
+        public static void defaultContact(List<Account> newAccounts) {
+            List<Contact> defaultContactsToCreate = new List<Contact>();
+            for (Account acc : newAccounts) {
+                Contact con = createDefaultContact(acc);
+                defaultContactsToCreate.add(con);
+            }
+            insert defaultContactsToCreate;
+        }
+
+        private static Contact createDefaultContact(Account acc) { 
+            Contact contact = new Contact(
+                AccountId = acc.Id,
+                LastName = 'DefaultContact',
+                Email = 'default@email.com'
+            );
+            return contact;
     }
-
-    void addressCopy(){
-
-    }
-
-    //[public | private ] [static] data_type setRating (input parameters) {
-    //  The body of the method
-    //}
-
-    //[public | private ] [static] data_type defaultContact (input parameters) {
-    //  The body of the method
-    //}
 }

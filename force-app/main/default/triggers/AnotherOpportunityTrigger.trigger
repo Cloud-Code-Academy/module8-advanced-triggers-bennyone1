@@ -19,22 +19,15 @@ https://www.salesforceben.com/12-salesforce-apex-best-practices/
 https://developer.salesforce.com/blogs/developer-relations/2015/01/apex-best-practices-15-apex-commandments
 */
 trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
-    if (Trigger.isBefore){
+    /*if (Trigger.isBefore){
         if (Trigger.isInsert){
-            // Set default Type for new Opportunities
-            Opportunity opp = Trigger.new[0];
-            if (opp.Type == null){
-                opp.Type = 'New Customer';
-            }        
-        } else if (Trigger.isDelete){
-            // Prevent deletion of closed Opportunities
-            for (Opportunity oldOpp : Trigger.old){
-                if (oldOpp.IsClosed){
-                    oldOpp.addError('Cannot delete closed opportunity');
-                }
-            }
+            AnotherOpportunityHandler handler = new AnotherOpportunityHandler();
+            handler.run();
         }
     }
+
+
+
 
     if (Trigger.isAfter){
         if (Trigger.isInsert){
@@ -62,6 +55,7 @@ trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, b
         // Send email notifications when an Opportunity is deleted 
         else if (Trigger.isDelete){
             notifyOwnersOpportunityDeleted(Trigger.old);
+            
         } 
         // Assign the primary contact to undeleted Opportunities
         else if (Trigger.isUndelete){
@@ -74,7 +68,7 @@ trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, b
     - Sends an email notification to the owner of the Opportunity when it gets deleted.
     - Uses Salesforce's Messaging.SingleEmailMessage to send the email.
     */
-    private static void notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
+    /*private static void  notifyOwnersOpportunityDeleted(List<Opportunity> opps) {
         List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
         for (Opportunity opp : opps){
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
@@ -97,7 +91,7 @@ trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, b
     - Assigns a primary contact with the title of 'VP Sales' to undeleted Opportunities.
     - Only updates the Opportunities that don't already have a primary contact.
     */
-    private static void assignPrimaryContact(Map<Id,Opportunity> oppNewMap) {        
+    /*private static void assignPrimaryContact(Map<Id,Opportunity> oppNewMap) {        
         Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>();
         for (Opportunity opp : oppNewMap.values()){            
             Contact primaryContact = [SELECT Id, AccountId FROM Contact WHERE Title = 'VP Sales' AND AccountId = :opp.AccountId LIMIT 1];
@@ -108,5 +102,5 @@ trigger AnotherOpportunityTrigger on Opportunity (before insert, after insert, b
             }
         }
         update oppMap.values();
-    }
+    } */
 }
